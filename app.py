@@ -22,8 +22,9 @@ get_status = "SELECT COUNT(User.id) FROM USER UNION SELECT COUNT(Forum.id) FROM 
 @app.route(BASE_URL + '/status/')
 def status():
     try:
-        db = get_db()
-        cursor = db.cursor()
+        #db = get_db()
+        cursor = get_db().cursor()
+        #cursor = db.cursor()
     except DatabaseError as e:
         return json.dumps({{"code": 4, "response": "Uncnow error"}})
     try:
@@ -44,13 +45,16 @@ def status():
 def clear():
     db = get_db()
     cursor = db.cursor()
+    query = '''SET FOREIGN_KEY_CHECKS = 0;
+		TRUNCATE TABLE User;
+		TRUNCATE TABLE Post;
+		TRUNCATE TABLE Thread;
+		TRUNCATE TABLE Forum;
+		TRUNCATE TABLE followers;
+		TRUNCATE TABLE subscriptions;
+		SET FOREIGN_KEY_CHECKS = 0;'''
     try:
-        cursor.execute("DELETE FROM followers;")
-        cursor.execute("DELETE FROM subscriptions;")
-        cursor.execute("DELETE FROM Post;")
-        cursor.execute("DELETE FROM Thread;")
-        cursor.execute("DELETE FROM Forum;")
-        cursor.execute("DELETE FROM User;")
+        cursor.execute(query)
         db.commit()
     except (DatabaseError) as e:
         cursor.close()
