@@ -109,11 +109,14 @@ def listUsers():
     if id == -1:
         cursor.close()
         return response_1
-    since = Optional_sience_id(request)
+    since = request.args.get('since_id')
+    if since == None:
+        since = 0
     add_order = optional_Order(request)
     add_limit = optional_Limit(request)
     try:
         cursor.execute(user_id_with_posts_on_this_forum + add_order + add_limit, [id, since])
+        print(user_id_with_posts_on_this_forum + add_order + add_limit)
         list_id = cursor.fetchall()
     except DatabaseError:
         cursor.close()
